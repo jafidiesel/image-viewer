@@ -1,58 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import Header from './components/Header.tsx';
-import ProfileInfo from './components/ProfileInfo.tsx';
-import ImageGrid from './components/ImageGrid.tsx';
-import { fetchInstagramMedia, fetchInstagramProfile } from './services/instagramService.ts';
-import { InstagramMedia, InstagramProfile } from './types/instagram.types';
+import BreedSelector from './components/BreedSelector.tsx';
+import ImageGallery from './components/ImageGallery.tsx';
+import { fetchBreedImages, fetchRandomDogImages } from './services/dogApiService.ts';
 import './styles.css';
 
 const App: React.FC = () => {
-  const [profile, setProfile] = useState<InstagramProfile | null>(null);
-  const [media, setMedia] = useState<InstagramMedia[]>([]);
-  const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(true);
-  const [isLoadingMedia, setIsLoadingMedia] = useState<boolean>(true);
+  const [selectedBreed, setSelectedBreed] = useState<string>('');
+  const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadImages = async () => {
       try {
-        setIsLoadingProfile(true);
-        const profileData = await fetchInstagramProfile();
-        setProfile(profileData);
+        setIsLoading(true);
+        setError(null);
+        
+        let imageData: string[];
+        
+        if (selectedBreed) {
+          imageData = await fetchBreedImages(selectedBreed, 20);
+        } else {
+          imageData = await fetchRandomDogImages(20);
+        }
+        
+        setImages(imageData);
       } catch (err) {
-        setError('Failed to load profile information. Please check your API credentials.');
+        setError('Failed to load dog images. Please try again later.');
         console.error(err);
       } finally {
-        setIsLoadingProfile(false);
+        setIsLoading(false);
       }
     };
 
-    const loadMedia = async () => {
-      try {
-        setIsLoadingMedia(true);
-        const mediaData = await fetchInstagramMedia();
-        setMedia(mediaData);
-      } catch (err) {
-        setError('Failed to load media. Please check your API credentials.');
-        console.error(err);
-      } finally {
-        setIsLoadingMedia(false);
-      }
-    };
-
-    loadProfile();
-    loadMedia();
-  }, []);
+    loadImages();
+  }, [selectedBreed]);
 
   return (
     <div className="app">
-      <Header username={profile?.username || 'Loading...'} />
+      <Header />
+      
+      <BreedSelector 
+        onBreedSelect={setSelectedBreed} 
+        selectedBreed={selectedBreed} 
+      />
       
       {error && <div className="error-message">{error}</div>}
       
       <main>
-        <ProfileInfo profile={profile} isLoading={isLoadingProfile} />
-        <ImageGrid media={media} isLoading={isLoadingMedia} />
+        <ImageGallery 
+          images={images} 
+          breedName={selectedBreed} 
+          isLoading={isLoading} 
+        />
       </main>
     </div>
   );
