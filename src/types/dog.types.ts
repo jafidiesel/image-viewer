@@ -5,17 +5,8 @@ export interface DogImage {
   height: number;
 }
 
-export interface BreedInfo {
+export interface Dog {
   id: string;
-  name: string;
-  temperament?: string;
-  life_span?: string;
-  origin?: string;
-  image?: {
-    url: string;
-  };
-}
-
-export interface BreedListResponse {
-  [key: string]: string[];
+  imageUrl: string;
+  breed?: string;
 }
