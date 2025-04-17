@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@types/gsap": "^3.0.0",
     "@types/node": "^16.18.68",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "axios": "^1.6.2",
+    "gsap": "^3.12.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
